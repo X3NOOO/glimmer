@@ -11,6 +11,8 @@ Glimmer is an LED controll board designed for use with the [WLED Project](https:
 
 The renders are not full because JLCPCB does not supply a barrel jack input with the proper footprint right now. It's also missing the pin headers, but that's something you'd most likely want to add yourself whilst installing the external peripherals. The screw terminals are missing because you should solder the connections - the footprints are present in the project, adding them would be trivial if you want to make the board yourself and if you want to do it go for it - if you don't know how you probably shouldn't.
 
+[schematics.pdf](/images/schematics.pdf)
+
 </details>
 
 ## Usage
