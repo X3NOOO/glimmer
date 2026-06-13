@@ -1,13 +1,12 @@
 # Glimmer
 
-Glimmer is an LED controll board designed for use with the [WLED Project](https://github.com/wled/WLED). It supports all the most common LED strip voltages up to 24V and supports all the fancy features (meaning an IR diode and an I2S microphone).
+Glimmer is an [WLED](https://github.com/wled/WLED) controller board. It supports all the most common LED strip voltages over 6.3mm jack and 5V over USB-C, audio reactivity, IR control, and driving two separate data channels at once.
 
 <details>
-<summary>Renders</summary>
+<summary>Photos</summary>
 
-![top.png](/images/top.png)
-
-![bottom.png](/images/bottom.png)
+![render.png](/images/render.png)
+![assembled.jpg](/images/assembled.jpg)
 
 The renders are not full because JLCPCB does not supply a barrel jack input with the proper footprint right now. It's also missing the pin headers, but that's something you'd most likely want to add yourself whilst installing the external peripherals. The screw terminals are missing because you should solder the connections - the footprints are present in the project, adding them would be trivial if you want to make the board yourself and if you want to do it go for it - if you don't know how you probably shouldn't.
 
@@ -15,9 +14,15 @@ The renders are not full because JLCPCB does not supply a barrel jack input with
 
 </details>
 
-## Usage
+## OSHWLab Stars 2026
 
-### Safety
+The project had to be remade in EasyEDA in order to be submitted to the OSHWLab Stars competition. I'm not the biggest fan of the program, but it is what it is.
+
+If you like the project feel free to check out it's OSHWLab page and maybe even leave a like if you're generous like that.
+
+Link to the project over there: https://oshwlab.com/x3no/project_caxlifbu
+
+## Safety
 
 Place a properly rated fuse in the fuseholder. The [3557-2 fuseholder](https://www.keyelco.com/userAssets/file/K75p47.pdf) takes both standard and mini automotive fuses.
 
@@ -25,64 +30,60 @@ Do not bridge anything that shouldn't be bridged.
 
 Do not be dumb.
 
-### USB Programming
+## Software
+The controller is meant to run under WLED. Check their docs for info about configuration and flashing.
+Website: https://kno.wled.ge/
+Github: https://github.com/WLED/WLED
 
-Bridge both of the jumperpads on the PCB to enable USB programming.
+There is an USB autoflashing circuitry present on the board, but you can use the UART port as well. If you do want to do it you should desolder the 0-ohm R22 and R22 resistors - they bridge the USB-UART controller with the ESP32.
 
-### Connecting an LED strip
+If you want to use WLED-MM a platformio compilation environment is available [here](https://gist.github.com/X3NOOO/2119d469b6a600acc29e1caa4ec98841).
 
-#### J3
-- The VDC output is fused input of the barrel jack. There is also an 1mF capacitor there for output stability.
-- The VUSB output is polyfused (2A) 5V input from the USB port.
-- The GND is just GND.
+## Usage
+Flashed your board with WLED? Good, now it's the time to wire it up. The first thing to do is to place a properly rated fuse into the fuse holder. You can calculate the fuse value using the WLED calculator. The big screw terminal is responsible for power delivery. When holding your controller with the USB port up and facing you:
+- The first hole is VDC, it's the barrel jack input, except it's fused via the fuse you just put in.
+- The second hole is VUSB, it's the same power your USB port supplies. There is an 2A polyfuse placed on it's line, so that's the limit on the power you can pull through it.
+- The third hole is GND.
 
-#### J2
-- 23 is output of the GPIO23 except it's levelshifted to 5V.
-- 18 is output of the GPIO18 except it's levelshifted to 5V.
+Then, there is the smaller screw terminal. It is used to communicate with your LEDs and houses the data lines. Both of them are levelshifted to 5V. The one on the left is mapped to your ESP32's GPIO23 and the right one is GPIO18.
 
-### Connecting external peripherals
+Now you connect the inputs board. Place some doublesided tape on the back of it and secure it in the cutout on the shell. Wire the connector 1:1, you can check the pinout if you're not sure if you're doing it right.
 
-- The 6-pin connector is for the [ICS-43434](https://www.invensense.com/wp-content/uploads/2016/02/DS-000069-ICS-43434-v1.2.pdf) I2S microphone.
-- The 3-pin connector is for the [TSOP38G36](https://www.vishay.com/docs/82731/tsop38g36.pdf) IR receiver.
+## Case
 
-Follow the WLED wiki for the wiring guides.
+The .stl files of the enclosure are available in the releases tab.
 
-The numbers next to the pins map the their respective GPIO pins. The + is +3.3V, the - is GND. The IR receiver connector also include the recommended filtering circuit (a whole resistor and a cap).
+## Pricing
+Prices at JLCPCB.
 
-### LED indicators
+### Controller
+- $160: Price for 2 assembled and 3 bare PCBs. All in black.
+- $100: Price for 2 assembled and 3 bare PCBs w/o the ESP32 which forces you to pick standard assembly.
+- $30: Price for 2+3 with most of the extended components excluded if you're willing to source and solder them yourself.
 
-Counting from the side of the board the ESP32 is located on:
+### Inputs board
+Header is not soldered in any of the variants.
+- $70: 2 assembled and 3 bare ones.
+- $20: 2 assembled and 3 bare ones w/o the microphone as it forces standard assembly.
 
-1. (D1) 3.3V is present.
-2. (D4) The barrel jack power is being used to power the board.
-3. (D6) CP2021N's RX - flashes when the ESP32 sends data to the USB port.
-4. (D5) CP2021N's TX - flashes when the ESP32 receives data from the USB port.
-5. (D2) Programmable LED connected to the GPIO2.
+### Shell
+- Up to $10: 1 bottom + 1 top. 
 
-### Case
-
-I would absolutely love to design a 3D printable case for this project, but doing so without knowing whether there are going to be any breaking changes having to be made is pointless. The whole idea is to make a case into which the module slides in - that's why there's padding on it's sides.
-
-## TODO
-
-- USB-C PD would be dope, but it doesn't support 24V even in the PPS mode and adding it just for the 12V mode doesn't make much sense.
+### Additional
+- 4x >33mm M2 screws.
+- 4x M2 threaded M2 insert nuts. Length=2mm, OD=4mm.
+- A bit of double sided tape if your Inputs Board doesn't hold in place.
 
 ## Get it
 
-All the files to get the board manufactured generated by the [jlcpcb-tool kicad plugin](https://github.com/bouni/kicad-jlcpcb-tools) are available in the releases tab. The cheapest full manufacturing of 2 assembled PCBs and 3 bare ones should be around $85. This excludes the ESP32, because getting it soldered as well forces you to pick the standard assembly instead of the economic one which skyrockets the price. If you want to cut the cost down a bit you should check the `jclpcb-optimised` board variant in KiCad - it swaps a few resistors for more common values - and deselect most of the extended components from assembly, they are ridiculously expensive. I'd personally leave in the USB-C port and a few ICs that look hard to solder. You can source the missing components from either your local shop or aliexpress and solder them on yourself. This should allow you to save a couple of bucks.
-
-## Backstory
-
-Recently I was helping my friend installing an LED strip under his celling. Because I'm the tech-savvy one I was in charge of making the controller and picking out the strip, he did all the mounting. I did some quick research, but there weren't any nice and capable off-the-shelf controllers in an reasonable price range. Then I found WLED which seemed really nice - an esp32 based controller, not much to mess up. I threw together a quick schematic and soldered it onto a protoboard. It was a pain. Because I wanted to put some LEDs around my house as well and now knew how awful chinese protoboards are I decided to make my own PCB. Even though I have some experience with KiCad I have never actually got one manufactured. I thought making a controller like this would be fun and I'd learn something new.
-
-Unfortunately, this stuff is expensive and the MoQ is wayyyy too high for just trying stuff out whilst not being sure whether they would work or not. I'm not gonna touch this project for a while and maybe some of you will make use of it before I get comfortable with spending a few hundred PLN on getting the PCBs made. If you do - please, let me know if there were any issues, how much you paid and where you got it done. I'd also love to see some pictures of the device in use :)
-
-If you do not want to get the PCB made but have an experience with PCB design I'd appreciate any input you might have. I'm new to this.
+All the files necessary to get the board made at JLCPCB are available in the Releases tab. They include all the components, so you can expect a to see a high price if you use them as they are. You can tweak the assembly components after uploading the BOM to the website to lower the price.
 
 ## IMPORTANT
 
-As said in the backstory - I am not an engineer - I do not know if the PCB works - I cannot guarantee it will not burn your house down. I do not take any responsibility for y'all being silly.
+I am not an engineer - the PCB works, but I cannot guarantee it will not burn your house down. I do not take any responsibility for y'all being silly.
 
-## Sidenote
+## Sidenotes
 
-Thank you to the (unfortunately dead) [yawl controller](https://github.com/lizardsystems/yawl-controller) project - I stole your levelshifter.
+- Thank you to the (unfortunately dead) [yawl controller](https://github.com/lizardsystems/yawl-controller) project - I stole your levelshifter.
+
+- Thank you to the creators of the [OSHWLab Stars](https://oshwlab.com/activities/stars2026) competition for making it possible to get this board manufactured in a reasonable price.
